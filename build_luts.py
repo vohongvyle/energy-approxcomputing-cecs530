@@ -12,7 +12,6 @@ Usage:
 import argparse, ctypes, json, os, subprocess, tempfile
 import numpy as np
 
-
 def find_circuits(meta, kind="8x8_unsigned"):
     """Collect unique circuits (name -> params, C path) from meta.json."""
     found = {}
