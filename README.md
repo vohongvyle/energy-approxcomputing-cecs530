@@ -1,25 +1,22 @@
-# Energy-Efficient Approximate Computing for ML — starter project
+# Energy-Efficient Approximate Computing for ML
 
-This project measures how much multiplier energy a neural network can save when exact 8-bit
-multipliers are replaced with approximate ones from
-[EvoApproxLib](https://github.com/ehw-fit/evoapproxlib), and how much accuracy that costs.
+I built this project for CECS530 to see how much energy a neural network could save by replacing exact 8-bit multipliers with approximate ones from [EvoApproxLib](https://github.com/ehw-fit/evoapproxlib), and what that change does to accuracy.
 
 ## How it works
 
-1. **`build_luts.py`** compiles the C model of every 8x8 unsigned multiplier in EvoApproxLib
-   (36 circuits) and evaluates all 256 x 256 input pairs into a lookup table. Each circuit's
-   published PDK45 power, MAE and WCE come from the library's `meta.json`.
-2. **`run_experiment.py`** trains a small MLP (64-64-10 on scikit-learn's handwritten digits),
-   then quantizes it to 8 bits:
-   - Activations become `uint8` (inputs and post-ReLU values are non-negative).
-   - Weights become a sign plus an 8-bit magnitude, so the unsigned multiplier can be used.
-   - Integer inference then does every `x * |w|` as a lookup in a multiplier's table.
+1. **`build_luts.py`** compiles the C model for each of EvoApproxLib’s 36 unsigned 8×8 multiplier circuits. It tests all 256 × 256 input pairs and saves the results in lookup tables. The published PDK45 power, MAE, and WCE values come from each circuit’s `meta.json`.
 
-   The script tries every circuit in three placements: both layers, layer 1 only, and layer 2 only.
-3. **`plot_results.py`** draws accuracy against relative multiplier energy, with the Pareto front.
+2. **`run_experiment.py`** trains a small 64-64-10 MLP on scikit-learn’s handwritten digits dataset, then quantizes it to 8 bits:
 
-**Energy model:** energy per inference ≈ Σ (multiplications in layer × multiplier power).
-This counts multipliers only, not adders, memory or data movement. Say so in your report.
+   - Activations use `uint8`, since the inputs and post-ReLU values are non-negative.
+   - Weights are stored as a sign and an 8-bit magnitude, so the model can use unsigned multipliers.
+   - During integer inference, each `x * |w|` operation is looked up in the selected multiplier’s table.
+
+   The script tests each circuit in three placements: both layers, layer 1 only, and layer 2 only.
+
+3. **`plot_results.py`** plots accuracy against relative multiplier energy and shows the Pareto front.
+
+**Energy model:** Energy per inference is estimated as the sum of the number of multiplications in each layer times the multiplier’s power. This estimate counts multipliers only; it does not include adders, memory, or data movement.
 
 ## Run it
 
@@ -28,14 +25,16 @@ pip install numpy scikit-learn matplotlib
 git clone https://github.com/ehw-fit/evoapproxlib
 python build_luts.py --lib evoapproxlib --out luts
 python run_experiment.py                  # digits dataset, runs in seconds
-python run_experiment.py --dataset mnist  # MNIST (downloads ~50 MB), slower
+python run_experiment.py --dataset mnist  # MNIST, downloads about 50 MB and takes longer
 python plot_results.py --dataset digits
 ```
 
-## First results (digits, seed 0, 540 test images)
+## First results
+
+These results are from the digits dataset with seed 0 and 540 test images.
 
 | Setup | Accuracy | Multiplier energy |
-|---|---|---|
+|---|---:|---:|
 | Float model | 97.78% | — |
 | 8-bit exact (`mul8u_1JFF`) | 97.78% | 1.00 |
 | `mul8u_1AGV`, both layers | 97.78% | 0.24 |
@@ -44,73 +43,64 @@ python plot_results.py --dataset digits
 | `mul8u_13QR`, both layers | 93.89% | 0.02 |
 | `mul8u_17QU`, both layers | 72.22% | 0.004 |
 
-What this shows:
-- **About 75% of multiplier energy can be saved with no accuracy loss on this task.**
-  With about 1% loss, the saving rises above 90%.
-- **Low average error is not the same as low DNN error.** Several circuits with similar MAE behave
-  differently, because consistent negative *bias* (always rounding down) accumulates across a
-  dot product. `build_luts.py` prints each circuit's mean error so you can study this.
-- **Layer 1 holds 86% of the multiplications** (64×64 vs 64×10), so approximating only layer 2
-  barely saves energy. Approximation pays off most in the largest layers.
+In this experiment, `mul8u_1AGV` saved about 75% of multiplier energy without reducing accuracy. With about a one percentage point accuracy drop, the savings went above 90%.
 
-**Caveat:** with 540 test images, one image is 0.19 percentage points. Differences under ~0.5 pp
-are noise. Repeat with several `--seed` values (or use MNIST) before drawing conclusions.
+I also found that low average error does not always mean low error in the neural network. Circuits with similar MAE can behave differently because a consistent negative bias—where products tend to round down—can build up across a dot product. `build_luts.py` prints each circuit’s mean error so you can compare them.
+
+Layer 1 accounts for 86% of the multiplications because it uses 64 × 64 operations, compared with 64 × 10 in layer 2. That’s why approximating only layer 2 saves relatively little energy.
+
+**A note on the results:** There are only 540 test images, so one image changes the accuracy by about 0.19 percentage points. Differences under roughly 0.5 percentage points may be noise. I’d repeat the experiment with several `--seed` values or use MNIST before drawing firm conclusions.
 
 ## Improved backend: `approx_backend.py`
 
+I added a second backend with a more detailed energy estimate and a layer-wise search.
+
 ```bash
-python approx_backend.py              # digits, 3 seeds, ~45 s
+python approx_backend.py              # digits, 3 seeds, about 45 seconds
 python approx_backend.py --seeds 5 --budgets 0 0.5 1 2
 ```
 
-What it adds over `run_experiment.py`:
+Here’s what it adds:
 
-1. **Fairer energy model.** One MAC = multiplier + exact 16-bit accumulator adder
-   (`add16u_1E2`, 0.072 mW). Savings shrink compared with multiplier-only numbers.
-   For example, `mul8u_1AGV` goes from 24% to 36% of exact energy.
-2. **Bias compensation at zero hardware cost.** Approximate multipliers mostly round down.
-   The expected error of every product is estimated from calibration activations and folded
-   into each neuron's bias. On layer 1 it removes 99% of the accumulator bias and 25–35% of the
-   RMS error. It is switched on per circuit only when it helps on the validation set, because it
-   does not always help accuracy.
-3. **Layer-wise search.** It tries every (circuit, compensation on/off) pair for each layer,
-   picks the cheapest under an accuracy budget on validation, and reports on an untouched test set.
-4. **Train / validation / test split and several seeds**, reported as mean ± std.
+1. **A more complete energy estimate.** Each multiply-accumulate (MAC) includes a multiplier and an exact 16-bit accumulator adder (`add16u_1E2`, 0.072 mW). This raises the relative energy compared with the multiplier-only estimate. For example, `mul8u_1AGV` goes from 24% to 36% of exact energy.
 
-Results (digits, 3 seeds, MAC energy relative to exact):
+2. **Bias compensation with no added hardware cost.** Approximate multipliers tend to round down. I estimate each product’s expected error using calibration activations, then fold that estimate into each neuron’s bias. In layer 1, this removes 99% of the accumulator bias and 25–35% of the RMS error. Since compensation does not always improve accuracy, the script enables it for a circuit only when it helps on the validation set.
+
+3. **A layer-wise search.** The script tries each circuit with compensation on and off for each layer. It then chooses the lowest-energy option that stays within the accuracy budget on the validation set.
+
+4. **Multiple data splits and seeds.** The results use separate training, validation, and test sets, and report averages across seeds.
+
+These results use the digits dataset with three seeds. Energy is relative to the exact MAC setup.
 
 | Setup | Energy | Test accuracy |
-|---|---|---|
+|---|---:|---:|
 | 8-bit exact | 1.00 | 97.31% |
 | `mul8u_1AGV` in both layers | 0.36 | 97.31% |
-| `mul8u_13QR` plain → with compensation | 0.17 | 91.85% → 92.87% |
-| `mul8u_17QU` plain → with compensation | 0.16 | 66.39% → 79.07% |
+| `mul8u_13QR`, plain → compensated | 0.17 | 91.85% → 92.87% |
+| `mul8u_17QU`, plain → compensated | 0.16 | 66.39% → 79.07% |
 | Layer-wise search, 0.5 pp budget | 0.23 | 96.39% |
 
-Compensation helps most for the most aggressive circuits. The layer-wise search finds cheaper
-designs, but the 360-image validation set is small, so its picks lose about 0.5–1 pp on test.
-A larger dataset (MNIST) makes the search more reliable.
+Compensation helped most with the more aggressive circuits. The layer-wise search also found cheaper designs, but its choices sometimes lost about 0.5–1 percentage point on the test set. The validation set has only 360 images, so a larger dataset like MNIST could make the search more reliable.
 
-## Where to take it next
+## What I’d try next
 
-1. **Bigger, harder model.** Use a CNN on MNIST or CIFAR-10 (PyTorch). Errors matter more in deep
-   networks, and the trade-off becomes more interesting.
-2. **Approximation-aware retraining.** Fine-tune with the approximate multiplier in the forward
-   pass (straight-through gradient). This usually recovers most of the lost accuracy.
-3. **Per-layer assignment.** Search for the cheapest circuit per layer under an accuracy budget.
-4. **Bias compensation.** Subtract each circuit's mean error from the accumulator and check
-   whether accuracy recovers for free.
-5. **Real hardware numbers.** Synthesize a MAC unit from the library's Verilog with Yosys,
-   or try an FPGA, to confirm the power savings beyond the published figures.
+1. **Test a larger model.** I could use a CNN with MNIST or CIFAR-10 to see how approximation errors affect a deeper network.
+2. **Retrain with approximate multipliers.** Fine-tuning with approximate multiplication in the forward pass and a straight-through gradient may recover some of the lost accuracy.
+3. **Search for a circuit per layer.** The current backend explores layer-wise choices; I could extend it to search for the cheapest circuit in each layer under an accuracy budget.
+4. **Test bias compensation further.** I could subtract each circuit’s mean error from the accumulator and measure how much accuracy comes back.
+5. **Check the estimates on hardware.** I could synthesize a MAC unit from the library’s Verilog with Yosys or test it on an FPGA to compare real power use with the published estimates.
 
 ## References
 
-- V. Mrazek et al., "EvoApprox8b: Library of approximate adders and multipliers for circuit
-  design and benchmarking of approximation methods", DATE 2017.
-- V. Mrazek et al., "ALWANN: Automatic Layer-Wise Approximation of Deep Neural Network
-  Accelerators without Retraining", ICCAD 2019 (a good model for the per-layer idea).
+- V. Mrazek et al., “EvoApprox8b: Library of approximate adders and multipliers for circuit design and benchmarking of approximation methods,” DATE 2017.
+- V. Mrazek et al., “ALWANN: Automatic Layer-Wise Approximation of Deep Neural Network Accelerators without Retraining,” ICCAD 2019. This paper is a useful reference for the per-layer approach.
 
-## Health application: arrhythmia detection
+## ECG application: arrhythmia detection
 
-See `ecg/README.md`. Run `python ecg/ecg_experiment.py` for the synthetic test bench, or
-`python ecg/ecg_experiment.py --data mitbih` for the real MIT-BIH data (`pip install wfdb`).
+I also added an ECG example. See [`ecg/README.md`](ecg/README.md) for details.
+
+```bash
+python ecg/ecg_experiment.py              # synthetic test bench
+python ecg/ecg_experiment.py --data mitbih  # real MIT-BIH data; install wfdb first
+```
+
