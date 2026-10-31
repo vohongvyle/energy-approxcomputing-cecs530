@@ -1,9 +1,20 @@
+<<<<<<< HEAD
 # Energy-Efficient Approximate Computing for ML
 
 I built this project for CECS530 to see how much energy a neural network could save by replacing exact 8-bit multipliers with approximate ones from [EvoApproxLib](https://github.com/ehw-fit/evoapproxlib), and what that change does to accuracy.
+=======
+# Risk-aware approximate computing for wearable heart monitoring
 
-## How it works
+When a wearable heart monitor saves energy with approximate arithmetic, **which heartbeats
+does it start to miss?** Overall accuracy hides the answer, because abnormal beats are rare.
+This project measures it directly and adds two fixes.
+>>>>>>> 9ed8701 (Added my files for personal upgrade project)
 
+It extends my CECS 530 group project,
+[approx-computing-ml](https://github.com/vohongvyle/approx-computing-ml), from handwritten
+digits to heartbeat classification. Everything is plain NumPy, so it runs on a laptop.
+
+<<<<<<< HEAD
 1. **`build_luts.py`** compiles the C model for each of EvoApproxLib’s 36 unsigned 8×8 multiplier circuits. It tests all 256 × 256 input pairs and saves the results in lookup tables. The published PDK45 power, MAE, and WCE values come from each circuit’s `meta.json`.
 
 2. **`run_experiment.py`** trains a small 64-64-10 MLP on scikit-learn’s handwritten digits dataset, then quantizes it to 8 bits:
@@ -17,12 +28,44 @@ I built this project for CECS530 to see how much energy a neural network could s
 3. **`plot_results.py`** plots accuracy against relative multiplier energy and shows the Pareto front.
 
 **Energy model:** Energy per inference is estimated as the sum of the number of multiplications in each layer times the multiplier’s power. This estimate counts multipliers only; it does not include adders, memory, or data movement.
+=======
+![results](ecg/results/ecg_synthetic.png)
+
+## What it does
+
+- A small 1D CNN classifies each heartbeat into the AAMI classes N (normal),
+  S (supraventricular), V (ventricular) and F (fusion).
+- The network runs in 8 bits, and every multiplication goes through the lookup table of one
+  of 36 approximate multipliers from [EvoApproxLib](https://github.com/ehw-fit/evoapproxlib).
+- Patients are split between training and testing, so the model is always tested on people it
+  has not seen.
+- For each design it reports accuracy, sensitivity per class and the number of abnormal beats
+  called normal.
+
+Two additions:
+
+1. **A clinically constrained search.** It picks a multiplier for each layer, keeping
+   S and V sensitivity close to the exact design instead of only overall accuracy.
+2. **A confidence-gated fallback.** A beat the approximate model calls "normal" with low
+   confidence is re-checked on the exact multiplier. Abnormal calls are never overruled.
+
+## Results so far (simulated heartbeats)
+
+These come from a synthetic test bench used to validate the pipeline. They are not clinical
+results; the MIT-BIH run is next.
+
+- Accuracy does not rank designs by risk: one multiplier kept 82% accuracy but missed 111
+  abnormal beats, against 28 for the exact design.
+- The fallback re-checks 1.9% of beats, uses 31% of the exact design's arithmetic energy, and
+  misses 23 abnormal beats, fewer than the exact model alone.
+>>>>>>> 9ed8701 (Added my files for personal upgrade project)
 
 ## Run it
 
 ```bash
-pip install numpy scikit-learn matplotlib
+pip install -r requirements.txt
 git clone https://github.com/ehw-fit/evoapproxlib
+<<<<<<< HEAD
 python build_luts.py --lib evoapproxlib --out luts
 python run_experiment.py                  # digits dataset, runs in seconds
 python run_experiment.py --dataset mnist  # MNIST, downloads about 50 MB and takes longer
@@ -104,3 +147,39 @@ python ecg/ecg_experiment.py              # synthetic test bench
 python ecg/ecg_experiment.py --data mitbih  # real MIT-BIH data; install wfdb first
 ```
 
+=======
+python3 build_luts.py --lib evoapproxlib --out luts    # multiplier lookup tables (needs a C compiler)
+
+python3 ecg/ecg_experiment.py                  # synthetic heartbeats, about 5 minutes
+python3 ecg/mitbih.py                          # downloads MIT-BIH (~100 MB), prints beat counts
+python3 ecg/ecg_experiment.py --data mitbih    # real data
+python3 ecg/export_web.py --data mitbih        # interactive page: ecg/web/arrhythmia_lab_mitbih.html
+```
+
+Options: `--acc-budget 0.5` (allowed drop in overall accuracy, points), `--se-budget 1.0`
+(allowed drop in S and V sensitivity, points), `--seed`, `--epochs`.
+
+## Files
+
+| File | What it does |
+|---|---|
+| `build_luts.py` | Builds a 256×256 lookup table for each EvoApproxLib 8×8 multiplier |
+| `ecg/synth_ecg.py` | Synthetic heartbeats from simulated patients, for testing without downloads |
+| `ecg/mitbih.py` | Loads MIT-BIH: lead MLII, AAMI classes, DS1/DS2 patient split |
+| `ecg/cnn.py` | 1D CNN trained in NumPy, its 8-bit approximate version, bias compensation |
+| `ecg/ecg_experiment.py` | Multiplier sweep, layer-wise searches, gated fallback, figure |
+| `ecg/export_web.py` | Builds a self-contained interactive page from the results |
+
+## Limitations
+
+- Results so far are on simulated beats, which are cleaner than real ECG.
+- Energy counts the multiplier and accumulator adder only (45 nm figures), not memory or radio.
+- One small CNN, post-training approximation only.
+
+## References
+
+- V. Mrazek et al., "EvoApprox8b: Library of approximate adders and multipliers for circuit design and benchmarking of approximation methods," DATE 2017.
+- P. de Chazal, M. O'Dwyer, R. B. Reilly, "Automatic classification of heartbeats using ECG morphology and heartbeat interval features," IEEE TBME, 2004.
+- G. B. Moody, R. G. Mark, "The impact of the MIT-BIH Arrhythmia Database," IEEE EMB Magazine, 2001.
+- F. Bulten et al., "Toward Energy-Efficient and Low-Power Arrhythmia Detection for Wearable Devices," arXiv:2607.14747, 2026.
+>>>>>>> 9ed8701 (Added my files for personal upgrade project)
