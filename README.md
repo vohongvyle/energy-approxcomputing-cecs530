@@ -23,23 +23,6 @@ Each map below shows its error for every one of the 65,536 pairs of 8-bit inputs
 lean toward results that are too small (blue). That lean matters: summed over hundreds of
 products in a neural network, it builds up into a bias.*
 
-## How it works
-
-1. **`build_luts.py`** compiles the C model of each of EvoApproxLib's 36 unsigned 8×8 multipliers,
-   evaluates all 256 × 256 input pairs, and saves the results as lookup tables. Power, mean absolute
-   error and worst-case error come from the library's `meta.json`.
-2. **`run_experiment.py`** trains a small 64-64-10 network on scikit-learn's handwritten digits and
-   quantizes it to 8 bits:
-   - activations are stored as unsigned 8-bit values (inputs and ReLU outputs are never negative);
-   - weights are stored as a sign plus an 8-bit magnitude, so an unsigned multiplier can be used;
-   - during inference, every product `x · |w|` is read from the chosen multiplier's table.
-
-   It tests each multiplier in both layers, in layer 1 only and in layer 2 only.
-3. **`plot_results.py`** draws accuracy against relative multiplier energy.
-4. **`approx_backend.py`** is an improved version (below).
-
-**Energy model:** energy per inference = Σ (multiplications in each layer × multiplier power).
-
 ## Run it
 
 ```bash
@@ -95,7 +78,6 @@ a point may be noise.
 | `mul8u_13QR`, plain → compensated | 0.17 | 91.85% → 92.87% |
 | `mul8u_17QU`, plain → compensated | 0.16 | 66.39% → 79.07% |
 | Layer-wise search, 0.5-point budget | 0.23 | 96.39% |
-
 
 ## References
 
