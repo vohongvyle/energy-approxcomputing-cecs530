@@ -1,4 +1,4 @@
-# Energy-Efficient Approximate Computing for ML
+### Energy-Efficient Approximate Computing for ML
 
 Group project for CECS 530 (Fall 2026).
 
