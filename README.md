@@ -20,7 +20,7 @@ Each map below shows its error for every one of the 65,536 pairs of 8-bit inputs
 lean toward results that are too small (blue). That lean matters: summed over hundreds of
 products in a neural network, it builds up into a bias.*
 
-### Run it
+#### Run it
 
 ```bash
 pip install -r requirements.txt
@@ -52,7 +52,7 @@ Digits dataset, seed 0, 540 test images.
 With 540 test images, one image is about 0.19 points of accuracy, so differences under about half
 a point may be noise.
 
-### Improved backend: `approx_backend.py`
+#### Improved backend: `approx_backend.py`
 
 ![Accuracy against energy with bias compensation and layer-wise search](docs/images/backend_results.png)
 
@@ -73,7 +73,7 @@ a point may be noise.
 | `mul8u_17QU`, plain → compensated | 0.16 | 66.39% → 79.07% |
 | Layer-wise search, 0.5-point budget | 0.23 | 96.39% |
 
-## References
+#### References
 
 - V. Mrazek et al., "EvoApprox8b: Library of approximate adders and multipliers for circuit design
   and benchmarking of approximation methods," DATE 2017.
