@@ -2,7 +2,7 @@
 
 Group project for CECS 530 (Fall 2026).
 
-We tested how much energy a neural network could save by replacing exact 8-bit multipliers with
+I tested how much energy a neural network could save by replacing exact 8-bit multipliers with
 approximate ones from [EvoApproxLib](https://github.com/ehw-fit/evoapproxlib), and what that change
 did to accuracy. In our experiments, one approximate multiplier cut multiplier energy by about 75%
 without reducing accuracy.
