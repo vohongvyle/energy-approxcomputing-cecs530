@@ -2,17 +2,14 @@
 
 Group project for CECS 530 (Fall 2026).
 
-How much energy can a neural network save by replacing exact 8-bit multipliers with
-approximate ones from [EvoApproxLib](https://github.com/ehw-fit/evoapproxlib), and what does it
-cost in accuracy? In our experiments, one approximate multiplier cut multiplier energy by
-**about 75% with no loss in accuracy**.
+I worked on this project for CECS 530 in Fall 2026. I tested how much energy a neural network could save by replacing exact 8-bit multipliers with approximate ones from EvoApproxLib, and what that change did to accuracy. In my experiments, one approximate multiplier cut multiplier energy by about 75% without reducing accuracy.
 
 ![Accuracy against multiplier energy for 36 approximate multipliers](docs/images/accuracy_vs_energy.png)
 
 *Each dot is one approximate multiplier used in the network. The staircase is the Pareto front:
 no other multiplier is both cheaper and more accurate.*
 
-## What an approximate multiplier does
+### What an approximate multiplier does
 
 An approximate multiplier gives up some exactness in return for a smaller, lower-power circuit.
 Each map below shows its error for every one of the 65,536 pairs of 8-bit inputs.
@@ -23,7 +20,7 @@ Each map below shows its error for every one of the 65,536 pairs of 8-bit inputs
 lean toward results that are too small (blue). That lean matters: summed over hundreds of
 products in a neural network, it builds up into a bias.*
 
-## Run it
+### Run it
 
 ```bash
 pip install -r requirements.txt
@@ -33,9 +30,6 @@ python3 run_experiment.py                               # digits dataset, a few 
 python3 plot_results.py --dataset digits
 python3 approx_backend.py                               # improved backend, about 45 s
 ```
-
-## First results
-
 Digits dataset, seed 0, 540 test images.
 
 | Setup | Accuracy | Multiplier energy |
@@ -58,7 +52,7 @@ Digits dataset, seed 0, 540 test images.
 With 540 test images, one image is about 0.19 points of accuracy, so differences under about half
 a point may be noise.
 
-## Improved backend: `approx_backend.py`
+### Improved backend: `approx_backend.py`
 
 ![Accuracy against energy with bias compensation and layer-wise search](docs/images/backend_results.png)
 
