@@ -96,20 +96,6 @@ a point may be noise.
 | `mul8u_17QU`, plain → compensated | 0.16 | 66.39% → 79.07% |
 | Layer-wise search, 0.5-point budget | 0.23 | 96.39% |
 
-## Files
-
-| File | What it does |
-|---|---|
-| `build_luts.py` | Lookup tables for the 36 EvoApproxLib multipliers |
-| `run_experiment.py` | Quantized network, exact vs approximate inference |
-| `plot_results.py` | Accuracy vs energy plot |
-| `approx_backend.py` | Fuller energy model, bias compensation, layer-wise search |
-| `results/` | Results and figures from our runs |
-
-## Related
-
-A follow-up that applies these ideas to wearable heart monitoring:
-[wearable-ecg-approx](https://github.com/vohongvyle/wearable-ecg-approx).
 
 ## References
 
