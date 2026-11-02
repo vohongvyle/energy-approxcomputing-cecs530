@@ -2,7 +2,10 @@
 
 Group project for CECS 530 (Fall 2026).
 
-I worked on this project for CECS 530 in Fall 2026. I tested how much energy a neural network could save by replacing exact 8-bit multipliers with approximate ones from EvoApproxLib, and what that change did to accuracy. In my experiments, one approximate multiplier cut multiplier energy by about 75% without reducing accuracy.
+We tested how much energy a neural network could save by replacing exact 8-bit multipliers with
+approximate ones from [EvoApproxLib](https://github.com/ehw-fit/evoapproxlib), and what that change
+did to accuracy. In our experiments, one approximate multiplier cut multiplier energy by about 75%
+without reducing accuracy.
 
 ![Accuracy against multiplier energy for 36 approximate multipliers](docs/images/accuracy_vs_energy.png)
 
@@ -20,7 +23,7 @@ Each map below shows its error for every one of the 65,536 pairs of 8-bit inputs
 lean toward results that are too small (blue). That lean matters: summed over hundreds of
 products in a neural network, it builds up into a bias.*
 
-#### Run it
+### Run it
 
 ```bash
 pip install -r requirements.txt
@@ -30,6 +33,9 @@ python3 run_experiment.py                               # digits dataset, a few 
 python3 plot_results.py --dataset digits
 python3 approx_backend.py                               # improved backend, about 45 s
 ```
+
+### First results
+
 Digits dataset, seed 0, 540 test images.
 
 | Setup | Accuracy | Multiplier energy |
@@ -52,7 +58,7 @@ Digits dataset, seed 0, 540 test images.
 With 540 test images, one image is about 0.19 points of accuracy, so differences under about half
 a point may be noise.
 
-#### Improved backend: `approx_backend.py`
+### Improved backend: `approx_backend.py`
 
 ![Accuracy against energy with bias compensation and layer-wise search](docs/images/backend_results.png)
 
@@ -73,7 +79,48 @@ a point may be noise.
 | `mul8u_17QU`, plain → compensated | 0.16 | 66.39% → 79.07% |
 | Layer-wise search, 0.5-point budget | 0.23 | 96.39% |
 
-#### References
+The search keeps within the budget on the validation set; on the test set it lost 0.9 points.
+
+### Project In-progress
+
+### Done
+
+- [x] Lookup tables for all 36 unsigned 8×8 multipliers in EvoApproxLib (`build_luts.py`)
+- [x] 8-bit quantized network with exact and approximate inference (`run_experiment.py`)
+- [x] Accuracy vs energy plot and Pareto front (`plot_results.py`)
+- [x] Multiplier-plus-adder energy model (`approx_backend.py`)
+- [x] Bias compensation folded into neuron biases
+- [x] Layer-wise multiplier search with an accuracy budget
+- [x] Separate train, validation and test sets over three seeds
+
+### In progress: scale up the computation
+
+- [ ] **Bigger model and dataset** 
+  - [ ] Small CNN on MNIST or Fashion-MNIST, quantized to 8 bits, every multiplication through the lookup tables (`run_cnn.py`)
+  - [ ] Speed up inference: group products by multiplier and use NumPy indexing so a full test set runs in minutes
+  - [ ] Accuracy vs energy plot for the CNN, next to the current one
+  - Question: does a "free" multiplier on the small network, such as `mul8u_1AGV`, stay free on a deeper model?
+
+- [ ] **Retraining with approximate multipliers** 
+  - [ ] Fine-tune with the approximate multiplier in the forward pass and a straight-through estimator for gradients (`retrain.py`)
+  - [ ] Compare plain, bias-compensated, retrained, and both, for `mul8u_13QR` and `mul8u_17QU`
+  - Question: how much accuracy does retraining recover compared with free bias compensation?
+
+- [ ] **Check the hardware numbers** 
+  - [ ] Synthesize the exact multiplier and 3–4 approximate ones from EvoApproxLib's Verilog with Yosys (`hardware/synth.sh`)
+  - [ ] Table of cell count and area against the library's power figures
+  - Question: do the cheapest multipliers keep the same ranking after synthesis?
+
+- [ ] **Which error metric predicts the damage** 
+  - [ ] For all 36 multipliers, correlate mean absolute error, worst-case error, bias and error probability with the accuracy drop (`analyze_metrics.py`)
+  - [ ] Scatter plot with correlation values for each metric
+  - Question: is bias a better predictor than average error?
+
+- [ ] Approximate adders in the accumulator, not only multipliers
+- [ ] Signed multipliers (`mul8s_*`) instead of sign-magnitude weights
+- [ ] Final report and slides with all results
+
+### References
 
 - V. Mrazek et al., "EvoApprox8b: Library of approximate adders and multipliers for circuit design
   and benchmarking of approximation methods," DATE 2017.
