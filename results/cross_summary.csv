@@ -1,0 +1,13 @@
+dataset,budget_pp,circuits,mult_saved_pct,mac_saved_pct,test_drop_pp,test_drop_sd
+mnist,0.5,mul8u_QKX,92.6,78.2,0.21,0.08
+mnist,1.0,mul8u_QKX,92.6,78.2,0.21,0.08
+mnist,2.0,mul8u_QKX,92.6,78.2,0.21,0.08
+fashion,0.5,mul8u_12N4/mul8u_DM1/mul8u_YX7,66.1,55.8,0.39,0.12
+fashion,1.0,mul8u_YX7,84.4,71.3,0.76,0.33
+fashion,2.0,mul8u_QKX/mul8u_YX7,87.1,73.6,1.13,0.21
+cifar10,0.5,mul8u_12N4+c/mul8u_1AGV/mul8u_FTA,72.6,61.3,0.07,0.29
+cifar10,1.0,mul8u_FTA/mul8u_FTA+c,78.5,66.3,0.56,0.16
+cifar10,2.0,mul8u_FTA/mul8u_FTA+c,78.5,66.3,0.56,0.16
+cifar100,0.5,mul8u_12N4/mul8u_12N4+c/mul8u_DM1,59.2,50.0,0.51,0.22
+cifar100,1.0,mul8u_12N4/mul8u_12N4+c/mul8u_1AGV+c,67.7,57.2,0.72,0.12
+cifar100,2.0,mul8u_17KS+c/mul8u_FTA+c/mul8u_YX7,78.8,66.5,2.44,0.36
