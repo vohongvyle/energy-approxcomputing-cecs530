@@ -8,7 +8,6 @@ cost in accuracy? We tested all 36 approximate multipliers of the library, first
 dataset, then on MNIST, Fashion-MNIST, CIFAR-10 and CIFAR-100.
 
 ![Energy saved at a fixed accuracy budget on four datasets](results/cross_budget_savings.png)
-
 **Main results**
 
 - On small handwritten digits, one multiplier (`mul8u_1AGV`) cut multiplier energy by **about 75%
