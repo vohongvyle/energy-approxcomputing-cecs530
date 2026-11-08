@@ -372,18 +372,6 @@ What a full run of `cross_dataset.py` prints:
 - [x] Signed multipliers (`signed_multipliers.py`)
 - [x] Final report and slides
 
-### Next
-
-Each item is one GitHub issue with one owner. Tick it when its pull request is merged.
-
-- [ ] **Layer-wise search on the four datasets, MLP and CNN** · owner: @teammate-A
-  - Question: does giving the first convolution a more exact multiplier recover the CNN's loss?
-- [ ] **Retrain the CNN** · owner: @teammate-B
-  - Question: does retraining close the gap between CNN and MLP?
-- [ ] **Synthesize a full MAC unit** (multiplier + adder + register) with ABC · owner: @teammate-C
-  - Question: how much of the multiplier saving survives at the MAC level?
-- [ ] **More seeds and full test sets for the adder and signed studies** · owner: @teammate-D
-- [ ] Wider adders (24- or 32-bit accumulators) so that the carry handling is also approximate
 
 ## References
 
