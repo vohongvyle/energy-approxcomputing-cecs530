@@ -323,33 +323,6 @@ What a full run of `cross_dataset.py` prints:
 
 ![Terminal output of cross_dataset.py](docs/images/terminal_run.png)
 
-## Files
-
-| File | What it does |
-|---|---|
-| `build_luts.py` | Lookup tables for the 36 EvoApproxLib multipliers |
-| `run_experiment.py` | Part 1: quantized network, exact vs approximate inference on digits |
-| `plot_results.py` | Part 1: accuracy vs energy plot |
-| `approx_backend.py` | Part 1: fuller energy model, bias compensation, layer-wise search |
-| `datasets.py` | Loaders for MNIST, Fashion-MNIST, CIFAR-10 and CIFAR-100 |
-| `lutmm.c`, `fastlut.py` | Fast lookup-table matrix multiply in C, with a Python wrapper |
-| `cross_dataset.py` | Part 2: all 36 multipliers on four datasets |
-| `plot_cross_dataset.py` | Part 2: figures in `results/` |
-| `get_data.sh` | Downloads the four datasets |
-| `docs/make_readme_images.py` | Dataset samples and heatmap for this README |
-| `mlp_cache.py` | Trains and caches the Part 2 MLPs for the Part 3 scripts |
-| `cnn.py`, `run_cnn.py` | NumPy CNN, its 8-bit version, and the four-dataset CNN study |
-| `plot_cnn_vs_mlp.py` | CNN against MLP figure |
-| `retrain.py` | Fine-tuning with approximate multipliers (straight-through estimator) |
-| `analyze_metrics.py` | Error metrics against accuracy drop |
-| `hardware/netlist.py` | Parses and simulates EvoApproxLib's Verilog netlists, writes BLIF |
-| `hardware/check_hardware.py`, `hardware/synth.sh` | Equivalence check, ABC synthesis, switching activity |
-| `hardware/cells.genlib` | Small generic cell library for ABC mapping |
-| `lutadd.c`, `approx_adders.py` | Matrix multiply with an approximate accumulator adder |
-| `signed_multipliers.py` | Signed `mul8s_*` multipliers |
-| `results/` | CSV results and figures from our runs |
-
-## Roadmap
 
 ### Done
 
