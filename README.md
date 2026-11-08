@@ -23,18 +23,7 @@ dataset, then on MNIST, Fashion-MNIST, CIFAR-10 and CIFAR-100.
 - Retraining with the approximate multiplier in the loop recovers most of the loss on MNIST and
   Fashion-MNIST, but little on CIFAR-100. The library's power figures hold up after our own
   synthesis (rank correlation 0.997).
-
-## Contents
-
-1. [How it works](#how-it-works)
-2. [What an approximate multiplier does](#what-an-approximate-multiplier-does)
-3. [Part 1: digits dataset](#part-1-digits-dataset)
-4. [Part 2: four datasets](#part-2-four-datasets)
-5. [Part 3: scaling up](#part-3-scaling-up)
-6. [Run it](#run-it)
-7. [Files](#files)
-8. [Roadmap](#roadmap)
-
+  
 ## How it works
 
 ![The experiment pipeline in five steps](docs/images/pipeline.png)
