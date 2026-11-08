@@ -1,0 +1,41 @@
+MNIST          seed 0 mul8u_1JFF  exact  98.13  plain  98.13  comp  98.13  retrained  98.14  both  98.14
+MNIST          seed 0 mul8u_QKX   exact  98.13  plain  97.90  comp  96.43  retrained  97.98  both  95.95
+MNIST          seed 0 mul8u_13QR  exact  98.13  plain  82.46  comp  83.81  retrained  97.07  both  70.87
+MNIST          seed 0 mul8u_17QU  exact  98.13  plain  45.03  comp  48.20  retrained  92.88  both  42.07
+  (94 s)
+MNIST          seed 1 mul8u_1JFF  exact  97.74  plain  97.74  comp  97.74  retrained  97.99  both  97.99
+MNIST          seed 1 mul8u_QKX   exact  97.74  plain  97.39  comp  96.66  retrained  97.89  both  95.91
+MNIST          seed 1 mul8u_13QR  exact  97.74  plain  82.95  comp  82.36  retrained  97.08  both  72.81
+MNIST          seed 1 mul8u_17QU  exact  97.74  plain  45.55  comp  46.07  retrained  92.76  both  49.76
+  (123 s)
+Fashion-MNIST  seed 0 mul8u_1JFF  exact  89.29  plain  89.29  comp  89.29  retrained  89.55  both  89.55
+Fashion-MNIST  seed 0 mul8u_QKX   exact  89.29  plain  88.05  comp  84.23  retrained  88.74  both  84.69
+Fashion-MNIST  seed 0 mul8u_13QR  exact  89.29  plain  40.26  comp  30.87  retrained  80.47  both  23.87
+Fashion-MNIST  seed 0 mul8u_17QU  exact  89.29  plain  16.77  comp  14.53  retrained  72.29  both  10.00
+  (198 s)
+Fashion-MNIST  seed 1 mul8u_1JFF  exact  88.82  plain  88.82  comp  88.82  retrained  89.58  both  89.58
+Fashion-MNIST  seed 1 mul8u_QKX   exact  88.82  plain  86.83  comp  81.06  retrained  88.88  both  83.61
+Fashion-MNIST  seed 1 mul8u_13QR  exact  88.82  plain  42.60  comp  27.06  retrained  80.70  both  23.45
+Fashion-MNIST  seed 1 mul8u_17QU  exact  88.82  plain  14.98  comp  14.77  retrained  70.94  both  14.84
+  (191 s)
+CIFAR-10       seed 0 mul8u_1JFF  exact  46.65  plain  46.65  comp  46.65  retrained  49.11  both  49.11
+CIFAR-10       seed 0 mul8u_QKX   exact  46.65  plain  42.95  comp  40.58  retrained  46.25  both  42.60
+CIFAR-10       seed 0 mul8u_13QR  exact  46.65  plain  36.58  comp  37.94  retrained  40.32  both  27.38
+CIFAR-10       seed 0 mul8u_17QU  exact  46.65  plain  24.83  comp  28.49  retrained  32.92  both  11.41
+  (944 s)
+CIFAR-10       seed 1 mul8u_1JFF  exact  47.57  plain  47.57  comp  47.57  retrained  49.95  both  49.95
+CIFAR-10       seed 1 mul8u_QKX   exact  47.57  plain  44.24  comp  43.28  retrained  48.14  both  45.01
+CIFAR-10       seed 1 mul8u_13QR  exact  47.57  plain  32.22  comp  37.48  retrained  39.65  both  16.64
+CIFAR-10       seed 1 mul8u_17QU  exact  47.57  plain  21.27  comp  23.28  retrained  32.83  both  10.15
+  (971 s)
+CIFAR-100      seed 0 mul8u_1JFF  exact  20.64  plain  20.64  comp  20.64  retrained  21.73  both  21.73
+CIFAR-100      seed 0 mul8u_QKX   exact  20.64  plain  17.33  comp  17.45  retrained  19.41  both  16.76
+CIFAR-100      seed 0 mul8u_13QR  exact  20.64  plain   4.15  comp   5.69  retrained   6.28  both   2.21
+CIFAR-100      seed 0 mul8u_17QU  exact  20.64  plain   1.61  comp   1.97  retrained   1.23  both   1.00
+  (1064 s)
+CIFAR-100      seed 1 mul8u_1JFF  exact  20.93  plain  20.93  comp  20.93  retrained  21.70  both  21.70
+CIFAR-100      seed 1 mul8u_QKX   exact  20.93  plain  16.74  comp  16.97  retrained  18.95  both  15.60
+CIFAR-100      seed 1 mul8u_13QR  exact  20.93  plain   3.13  comp   3.03  retrained   3.36  both   1.00
+CIFAR-100      seed 1 mul8u_17QU  exact  20.93  plain   1.01  comp   1.01  retrained   0.85  both   0.90
+  (945 s)
+saved results/retrain.csv, results/retrain.png

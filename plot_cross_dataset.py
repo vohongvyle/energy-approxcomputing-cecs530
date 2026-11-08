@@ -91,14 +91,16 @@ ax.legend(frameon=False, ncol=4, fontsize=8, loc="upper left"); clean(ax); ax.gr
 fig.tight_layout(); fig.savefig(os.path.join(OUT, "cross_budget_savings.png"), bbox_inches="tight")
 
 # Figure 3: changed predictions against accuracy drop
-fig, ax = plt.subplots(figsize=(5.5, 3.8), dpi=160)
+fig, ax = plt.subplots(figsize=(6.5, 4), dpi=160)
 for n in names:
     ex = {b["seed"]: float(b["int8_test"]) for b in base if b["dataset"] == n}
     rs = [r for r in sweep if r["dataset"] == n]
     ax.scatter([100 * float(r["flip"]) for r in rs], [100 * (ex[r["seed"]] - float(r["test_acc"])) for r in rs],
-               s=9, color=COLORS[n], alpha=0.7, label=PRETTY[n])
-ax.set_xscale("symlog", linthresh=1); ax.set_yscale("symlog", linthresh=1)
-ax.set_xlabel("test predictions changed vs exact (%)"); ax.set_ylabel("accuracy drop (points)")
-ax.set_title("Changed predictions turn into lost accuracy"); ax.legend(frameon=False, fontsize=8); clean(ax)
+               s=12, color=COLORS[n], alpha=0.75, lw=0, label=PRETTY[n])
+ax.set_xlim(0, 100); ax.set_ylim(-2, 92)
+ax.set_xlabel("test predictions that change vs the exact network (%)")
+ax.set_ylabel("accuracy drop (points)")
+ax.set_title("Each dot is one multiplier and seed: hard datasets change many predictions before accuracy drops")
+ax.title.set_fontsize(9.5); ax.legend(frameon=False, fontsize=8, loc="upper left"); clean(ax)
 fig.tight_layout(); fig.savefig(os.path.join(OUT, "cross_flips.png"), bbox_inches="tight")
 print("saved results/cross_drop_vs_energy.png, cross_budget_savings.png, cross_flips.png")

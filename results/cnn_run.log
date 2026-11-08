@@ -1,0 +1,23 @@
+MNIST          seed 0: float 0.9876  8-bit exact 0.9878  (8 epochs, 482 s)
+MNIST          seed 1: float 0.9887  8-bit exact 0.9886  (8 epochs, 457 s)
+Fashion-MNIST  seed 0: float 0.8960  8-bit exact 0.8963  (10 epochs, 887 s)
+Fashion-MNIST  seed 1: float 0.9008  8-bit exact 0.9011  (10 epochs, 945 s)
+CIFAR-10       seed 0: float 0.6685  8-bit exact 0.6688  (15 epochs, 1818 s)
+CIFAR-10       seed 1: float 0.6854  8-bit exact 0.6853  (15 epochs, 1498 s)
+CIFAR-100      seed 0: float 0.3723  8-bit exact 0.3717  (15 epochs, 1249 s)
+CIFAR-100      seed 1: float 0.3704  8-bit exact 0.3709  (15 epochs, 1239 s)
+
+CNN: energy saved at a fixed accuracy budget (chosen on validation), mean of 2 seeds
+dataset        budget mult saved MAC saved  test drop  multipliers
+MNIST            0.5p      88.5%     74.7%    0.16 pp  mul8u_QKX/mul8u_YX7
+MNIST            1.0p      92.6%     78.2%    0.28 pp  mul8u_QKX
+MNIST            2.0p      92.6%     78.2%    0.28 pp  mul8u_QKX
+Fashion-MNIST    0.5p      63.7%     53.8%    0.40 pp  mul8u_12N4
+Fashion-MNIST    1.0p      68.5%     57.9%    0.93 pp  mul8u_12N4/mul8u_17KS
+Fashion-MNIST    2.0p      77.1%     65.1%    1.66 pp  mul8u_1AGV/mul8u_FTA
+CIFAR-10         0.5p      50.1%     42.3%   -0.10 pp  mul8u_DM1
+CIFAR-10         1.0p      63.7%     53.8%    0.96 pp  mul8u_12N4
+CIFAR-10         2.0p      68.5%     57.9%    1.27 pp  mul8u_12N4/mul8u_17KS
+CIFAR-100        0.5p      56.9%     48.1%    0.64 pp  mul8u_12N4/mul8u_DM1
+CIFAR-100        1.0p      63.7%     53.8%    1.00 pp  mul8u_12N4
+CIFAR-100        2.0p      63.7%     53.8%    1.00 pp  mul8u_12N4

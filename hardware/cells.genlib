@@ -1,0 +1,18 @@
+# A small generic cell library for ABC technology mapping.
+# Areas are in um^2 and approximate the X1 cells of a 45 nm open cell library; delays are unit.
+# Good enough to compare circuits with each other, not to sign off a real chip.
+GATE ZERO    0     Y=CONST0;
+GATE ONE     0     Y=CONST1;
+GATE BUF     0.798 Y=A;                 PIN * NONINV 1 999 1 0 1 0
+GATE INV     0.532 Y=!A;                PIN * INV 1 999 1 0 1 0
+GATE NAND2   0.798 Y=!(A*B);            PIN * INV 1 999 1 0 1 0
+GATE NOR2    0.798 Y=!(A+B);            PIN * INV 1 999 1 0 1 0
+GATE AND2    1.064 Y=A*B;               PIN * NONINV 1 999 1 0 1 0
+GATE OR2     1.064 Y=A+B;               PIN * NONINV 1 999 1 0 1 0
+GATE XOR2    1.596 Y=A*!B+!A*B;         PIN * UNKNOWN 1 999 1 0 1 0
+GATE XNOR2   1.596 Y=A*B+!A*!B;         PIN * UNKNOWN 1 999 1 0 1 0
+GATE AOI21   1.064 Y=!(A*B+C);          PIN * INV 1 999 1 0 1 0
+GATE OAI21   1.064 Y=!((A+B)*C);        PIN * INV 1 999 1 0 1 0
+GATE AOI22   1.330 Y=!(A*B+C*D);        PIN * INV 1 999 1 0 1 0
+GATE OAI22   1.330 Y=!((A+B)*(C+D));    PIN * INV 1 999 1 0 1 0
+GATE MUX2    1.862 Y=A*S+B*!S;          PIN * UNKNOWN 1 999 1 0 1 0

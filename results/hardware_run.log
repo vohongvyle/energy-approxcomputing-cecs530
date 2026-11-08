@@ -1,0 +1,47 @@
+mnist: 80% of activations are 0, mean weight magnitude 43.2
+cifar10: 0% of activations are 0, mean weight magnitude 53.6
+mul8u_1JFF  pwr 0.3910  gates  320  ABC cells  341  area   350.3  toggles random  105.9  MNIST   20.9  CIFAR-10   89.3  ok
+mul8u_Y48   pwr 0.3900  gates  315  ABC cells  347  area   351.1  toggles random  104.9  MNIST   21.6  CIFAR-10   90.6  ok
+mul8u_1446  pwr 0.3880  gates  320  ABC cells  334  area   342.9  toggles random  106.4  MNIST   21.9  CIFAR-10   91.9  ok
+mul8u_2P7   pwr 0.3860  gates  312  ABC cells  344  area   347.7  toggles random  103.6  MNIST   21.4  CIFAR-10   89.2  ok
+mul8u_125K  pwr 0.3840  gates  310  ABC cells  337  area   341.0  toggles random  103.8  MNIST   21.3  CIFAR-10   89.4  ok
+mul8u_LM7   pwr 0.3800  gates  307  ABC cells  334  area   337.8  toggles random  103.0  MNIST   21.2  CIFAR-10   88.6  ok
+mul8u_JQQ   pwr 0.3710  gates  294  ABC cells  309  area   316.0  toggles random  102.2  MNIST   20.8  CIFAR-10   88.3  ok
+mul8u_KEM   pwr 0.3700  gates  299  ABC cells  328  area   330.1  toggles random   99.5  MNIST   20.5  CIFAR-10   85.0  ok
+mul8u_14VP  pwr 0.3640  gates  295  ABC cells  311  area   314.7  toggles random   99.5  MNIST   20.4  CIFAR-10   85.1  ok
+mul8u_150Q  pwr 0.3600  gates  294  ABC cells  307  area   311.5  toggles random   98.9  MNIST   20.3  CIFAR-10   84.5  ok
+mul8u_GS2   pwr 0.3560  gates  280  ABC cells  285  area   293.9  toggles random   98.4  MNIST   19.8  CIFAR-10   84.1  ok
+mul8u_CK5   pwr 0.3450  gates  270  ABC cells  301  area   300.6  toggles random   90.7  MNIST   18.5  CIFAR-10   76.5  ok
+mul8u_QJD   pwr 0.3440  gates  274  ABC cells  296  area   297.4  toggles random   91.9  MNIST   18.6  CIFAR-10   77.5  ok
+mul8u_7C1   pwr 0.3290  gates  282  ABC cells  264  area   272.6  toggles random  100.1  MNIST   19.7  CIFAR-10   83.5  ok
+mul8u_2AC   pwr 0.3110  gates  244  ABC cells  271  area   271.1  toggles random   81.8  MNIST   17.0  CIFAR-10   67.7  ok
+mul8u_RCG   pwr 0.3090  gates  249  ABC cells  255  area   255.9  toggles random   89.4  MNIST   17.3  CIFAR-10   74.8  ok
+mul8u_ZFB   pwr 0.3040  gates  286  ABC cells  245  area   254.0  toggles random   90.4  MNIST   17.8  CIFAR-10   73.7  ok
+mul8u_2HH   pwr 0.3020  gates  238  ABC cells  261  area   260.4  toggles random   79.6  MNIST   16.3  CIFAR-10   65.4  ok
+mul8u_NGR   pwr 0.2760  gates  217  ABC cells  229  area   234.3  toggles random   72.6  MNIST   14.4  CIFAR-10   58.6  ok
+mul8u_1CMB  pwr 0.2370  gates  213  ABC cells  200  area   203.2  toggles random   78.8  MNIST   14.7  CIFAR-10   64.3  ok
+mul8u_185Q  pwr 0.2060  gates  180  ABC cells  184  area   185.7  toggles random   59.1  MNIST   11.8  CIFAR-10   45.7  ok
+mul8u_19DB  pwr 0.2060  gates  176  ABC cells  184  area   187.8  toggles random   59.3  MNIST   11.9  CIFAR-10   46.2  ok
+mul8u_DM1   pwr 0.1950  gates  162  ABC cells  169  area   172.1  toggles random   54.4  MNIST   10.5  CIFAR-10   42.1  ok
+mul8u_L40   pwr 0.1890  gates  185  ABC cells  155  area   161.2  toggles random   70.8  MNIST   13.0  CIFAR-10   57.1  ok
+mul8u_12N4  pwr 0.1420  gates  182  ABC cells  144  area   146.8  toggles random   62.6  MNIST   12.3  CIFAR-10   50.0  ok
+mul8u_17KS  pwr 0.1040  gates   99  ABC cells  104  area   105.3  toggles random   32.8  MNIST    5.9  CIFAR-10   23.1  ok
+mul8u_1AGV  pwr 0.0950  gates   87  ABC cells   97  area    93.1  toggles random   28.6  MNIST    5.2  CIFAR-10   19.9  ok
+mul8u_FTA   pwr 0.0840  gates   83  ABC cells   91  area    87.0  toggles random   27.6  MNIST    4.7  CIFAR-10   18.4  ok
+mul8u_YX7   pwr 0.0610  gates  114  ABC cells   66  area    66.2  toggles random   46.7  MNIST    9.3  CIFAR-10   40.3  ok
+mul8u_JV3   pwr 0.0340  gates   41  ABC cells   47  area    43.1  toggles random   14.2  MNIST    2.2  CIFAR-10    8.3  ok
+mul8u_18DU  pwr 0.0310  gates   38  ABC cells   42  area    34.9  toggles random   12.6  MNIST    1.8  CIFAR-10    6.8  ok
+mul8u_QKX   pwr 0.0290  gates   55  ABC cells   42  area    36.4  toggles random   22.4  MNIST    4.0  CIFAR-10   16.8  ok
+mul8u_13QR  pwr 0.0085  gates   16  ABC cells   26  area    17.8  toggles random    5.3  MNIST    0.5  CIFAR-10    1.8  ok
+mul8u_17C8  pwr 0.0019  gates    7  ABC cells   17  area     7.5  toggles random    2.6  MNIST    0.3  CIFAR-10    1.1  ok
+mul8u_17QU  pwr 0.0017  gates    6  ABC cells   19  area     8.8  toggles random    2.2  MNIST    0.6  CIFAR-10    1.3  ok
+mul8u_E9R   pwr 0.0000  gates    0  ABC cells   16  area     0.0  toggles random    0.0  MNIST    0.0  CIFAR-10    0.0  ok
+
+Spearman rank correlation with the library's power figure (36 multipliers):
+  lib_area_um2     0.992
+  netlist_gates    0.985
+  mapped_area      0.997
+  toggles_random   0.986
+  toggles_mnist    0.987
+  toggles_cifar10  0.989
+saved results/hardware.csv, results/hardware_check.png

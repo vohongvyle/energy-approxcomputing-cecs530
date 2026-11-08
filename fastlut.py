@@ -40,7 +40,7 @@ def _load():
 
 
 def lut_matmul(xq, mag, sgn, lut):
-    """xq (N, K) uint8, mag (K, J) uint8, sgn (K, J) int8, lut (256, 256) int32 -> (N, J) int64."""
+    """xq (N, K) uint8, mag (K, J) uint8, sgn (K, J) int8, lut (256, 256) int32 -> (N, J) int32."""
     xq = np.ascontiguousarray(xq, np.uint8)
     mag = np.ascontiguousarray(mag, np.uint8)
     sgn = np.ascontiguousarray(sgn, np.int8)
@@ -51,9 +51,9 @@ def lut_matmul(xq, mag, sgn, lut):
     if lib:
         out = np.empty((N, J), np.int32)
         lib.lut_matmul(xq, mag, sgn, lut, out, N, K, J, int(not lut[0].any()))
-        return out.astype(np.int64)
+        return out
     out = np.empty((N, J), np.int64)                       # NumPy fallback
     s = sgn.astype(np.int64)
     for i in range(0, N, 64):
         out[i:i + 64] = (lut[xq[i:i + 64, :, None], mag[None]] * s[None]).sum(1)
-    return out
+    return out.astype(np.int32)

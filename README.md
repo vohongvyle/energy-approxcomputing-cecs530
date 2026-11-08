@@ -1,4 +1,4 @@
-## Energy-Efficient Approximate Computing for ML
+# Energy-Efficient Approximate Computing for ML
 
 Group project for CECS 530 (Fall 2026).
 
@@ -8,6 +8,7 @@ cost in accuracy? We tested all 36 approximate multipliers of the library, first
 dataset, then on MNIST, Fashion-MNIST, CIFAR-10 and CIFAR-100.
 
 ![Energy saved at a fixed accuracy budget on four datasets](results/cross_budget_savings.png)
+
 **Main results**
 
 - On small handwritten digits, one multiplier (`mul8u_1AGV`) cut multiplier energy by **about 75%
@@ -17,6 +18,11 @@ dataset, then on MNIST, Fashion-MNIST, CIFAR-10 and CIFAR-100.
   **57% on CIFAR-100**.
 - The best multiplier for one dataset is often not safe on another, and accuracy alone hides how
   many predictions change.
+- A small CNN is much more accurate on CIFAR but tolerates approximation **less**: 54% saved at a
+  1-point budget on CIFAR-10, against 66% for the MLP.
+- Retraining with the approximate multiplier in the loop recovers most of the loss on MNIST and
+  Fashion-MNIST, but little on CIFAR-100. The library's power figures hold up after our own
+  synthesis (rank correlation 0.997).
 
 ## Contents
 
@@ -24,9 +30,10 @@ dataset, then on MNIST, Fashion-MNIST, CIFAR-10 and CIFAR-100.
 2. [What an approximate multiplier does](#what-an-approximate-multiplier-does)
 3. [Part 1: digits dataset](#part-1-digits-dataset)
 4. [Part 2: four datasets](#part-2-four-datasets)
-5. [Run it](#run-it)
-6. [Files](#files)
-7. [Roadmap](#roadmap)
+5. [Part 3: scaling up](#part-3-scaling-up)
+6. [Run it](#run-it)
+7. [Files](#files)
+8. [Roadmap](#roadmap)
 
 ## How it works
 
@@ -131,19 +138,162 @@ collapses.*
 
 *With `mul8u_1AGV`, 0.6% of MNIST predictions change, against 4.8% on Fashion-MNIST, 12.5% on
 CIFAR-10 and 41% on CIFAR-100. On hard tasks many predictions change before accuracy drops,
-because many of them were already wrong.*
+partly because many of them were already wrong.*
 
 **Bias compensation rarely helps here.** It helped the most aggressive multipliers (for example
 `mul8u_13QR` on CIFAR-10, 12.1 → 9.1 points lost), but often hurt the useful ones: `mul8u_QKX` lost
 2.30 points on MNIST with it, against 0.21 without.
 
-**Limits.** An MLP is a weak model for CIFAR (46.5% and 20.4%), so a CNN may behave differently.
-Energy is estimated from the library's 45 nm figures, not measured, and does not count memory.
+**Limits.** An MLP is a weak model for CIFAR (46.5% and 20.4%); Part 3 repeats the study with a
+CNN. Energy is estimated from the library's 45 nm figures, not measured, and does not count memory.
+
+## Part 3: scaling up
+
+Six follow-up studies. The CNN uses 2 seeds; the others are smaller, exploratory runs (noted
+below).
+
+### A CNN on the four datasets (`run_cnn.py`)
+
+A small CNN written in NumPy: two 3×3 convolution layers (16 and 32 channels, each followed by
+ReLU and 2×2 max pooling) and one dense layer, trained with Adam for 8–15 epochs. All three layers
+run 8-bit through the same lookup tables; convolutions become matrix multiplies (im2col). Same
+procedure as Part 2: multiplier chosen on validation, reported on test, 2 seeds.
+
+| Dataset | MLP, 8-bit | CNN, 8-bit | MAC saved at ≤ 1 point: MLP | CNN |
+|---|---|---|---|---|
+| MNIST | 97.94% | 98.82% | 78.2% | 78.2% |
+| Fashion-MNIST | 89.13% | 89.87% | 71.3% | 57.9% |
+| CIFAR-10 | 46.52% | 67.70% | 66.3% | 53.8% |
+| CIFAR-100 | 20.42% | 37.13% | 57.2% | 53.8% |
+
+![CNN against MLP](results/cnn_vs_mlp.png)
+
+*The CNN is far more accurate on CIFAR, but every multiplier costs it more: `mul8u_QKX` loses 16
+points on CIFAR-10 with the CNN against 3 with the MLP. Errors made in the first convolution are
+passed on through two more approximate layers, and each convolution output sums only 9–144
+products, so errors average out less than in the MLP's first layer (784–3,072 products per neuron).*
+
+### Retraining with approximate multipliers (`retrain.py`)
+
+Fine-tune the MLP for 3 epochs with the approximate multiplier in the forward pass (every product
+read from its table) and a straight-through estimator for gradients. Mean of 2 seeds, test
+accuracy (%):
+
+| Dataset | Multiplier | 8-bit exact | Plain | Compensated | Retrained | Retrained + compensated |
+|---|---|---|---|---|---|---|
+| MNIST | `mul8u_13QR` | 97.94 | 82.70 | 83.08 | **97.08** | 71.84 |
+| MNIST | `mul8u_17QU` | 97.94 | 45.29 | 47.14 | **92.82** | 45.92 |
+| Fashion-MNIST | `mul8u_13QR` | 89.06 | 41.43 | 28.96 | **80.59** | 23.66 |
+| Fashion-MNIST | `mul8u_17QU` | 89.06 | 15.88 | 14.65 | **71.61** | 12.42 |
+| CIFAR-10 | `mul8u_13QR` | 47.11 | 34.40 | 37.71 | **39.98** | 22.01 |
+| CIFAR-100 | `mul8u_13QR` | 20.78 | 3.64 | 4.36 | 4.82 | 1.60 |
+
+![Retraining against bias compensation](results/retrain.png)
+
+- Retraining recovers most of the loss on MNIST and Fashion-MNIST, less on CIFAR-10 and almost
+  nothing on CIFAR-100, where these multipliers leave too little signal to learn from.
+- Compensating a retrained network hurts badly: retraining already adapted the weights to the
+  multiplier's bias, so removing the bias again over-corrects.
+- Control: fine-tuning the exact network for the same 3 epochs gains 0.1–2.4 points
+  (`retrain.csv`, rows `mul8u_1JFF`), so part of any gain on CIFAR-10 is just extra training.
+- This retraining baseline is trained on float32 inputs, so its exact accuracy differs slightly
+  from Part 2.
+
+### Checking the hardware numbers (`hardware/`)
+
+Yosys could not be installed in our environment, so we used [ABC](https://github.com/berkeley-abc/abc)
+directly, the logic-synthesis engine that Yosys itself calls. For each of the 36 multipliers,
+`hardware/check_hardware.py`:
+
+1. simulates its gate-level Verilog netlist on all 65,536 inputs: **all 36 match the lookup
+   tables exactly**;
+2. optimizes and maps it with ABC onto a small generic cell library (`hardware/cells.genlib`), and
+   checks with ABC's `cec` that the function did not change;
+3. counts gate output switches per multiplication (the main driver of dynamic power), for random
+   inputs and for the real operand stream of a trained network on MNIST and CIFAR-10.
+
+| Measure | Spearman rank correlation with the library's power |
+|---|---|
+| Library area | 0.992 |
+| Gates in the netlist | 0.985 |
+| Area after ABC synthesis | 0.997 |
+| Switching, random inputs | 0.986 |
+| Switching, MNIST operands | 0.987 |
+| Switching, CIFAR-10 operands | 0.989 |
+
+![Library power against our synthesis and switching measurements](results/hardware_check.png)
+
+*The ranking holds. Two of the cheap multipliers switch more than their power figure suggests:
+`mul8u_YX7` (15.6% of exact power, about 44% of the exact switching) and `mul8u_QKX` (7.4% and
+about 20%). Real data also switches much less than random inputs: 80% of MNIST pixels are 0, so the
+exact multiplier toggles 20.9 gates per multiply on MNIST against 105.9 on random inputs.*
+
+`hardware/synth.sh` runs the same ABC flow on one multiplier.
+
+### Which error metric predicts the damage (`analyze_metrics.py`)
+
+Spearman rank correlation between each metric and the accuracy drop, over the 35 approximate
+multipliers:
+
+| Network | Dataset | MAE | Worst-case error | Bias | Error probability |
+|---|---|---|---|---|---|
+| MLP | MNIST | 0.59 | 0.58 | 0.53 | 0.40 |
+| MLP | Fashion-MNIST | 0.94 | 0.90 | 0.91 | 0.79 |
+| MLP | CIFAR-10 | 0.80 | 0.81 | 0.78 | 0.53 |
+| MLP | CIFAR-100 | 0.95 | 0.91 | 0.91 | 0.74 |
+| CNN | MNIST | 0.88 | 0.84 | 0.84 | 0.72 |
+| CNN | Fashion-MNIST | 0.94 | 0.92 | 0.92 | 0.70 |
+| CNN | CIFAR-10 | 0.84 | 0.85 | 0.83 | 0.54 |
+| CNN | CIFAR-100 | 0.96 | 0.94 | 0.92 | 0.69 |
+
+![Error metrics against accuracy drop](results/metric_scatter.png)
+
+*Bias is not a better predictor than mean absolute error; MAE is the best or tied-best almost
+everywhere. Error probability, how often the result is wrong at all, is the worst: many circuits
+are wrong on nearly every input but only by a little.*
+
+### Approximate adders in the accumulator (`approx_adders.py`, `lutadd.c`)
+
+Each of EvoApproxLib's 30 approximate 16-bit adders replaces the exact accumulator adder, first
+with the exact multiplier and then with `mul8u_1AGV`. MLP, seed 0, the same 2,000 random test images
+for every adder (adders are simulated gate by gate, which is slow).
+
+| Dataset | Exact multiplier: MAC saved at ≤ 1 point | `mul8u_1AGV` alone | `mul8u_1AGV` + best adder at ≤ 1 point |
+|---|---|---|---|
+| MNIST | 11.7% (`add16u_0GK`) | 63.9% | 75.6% (`add16u_0GK`) |
+| Fashion-MNIST | 9.9% (`add16u_00G`) | 63.9% | 73.9% (`add16u_00G`) |
+| CIFAR-10 | 10.8% (`add16u_0B4`) | 63.9% | 73.9% (`add16u_00G`) |
+| CIFAR-100 | 7.8% (`add16u_0M0`) | 63.9%, but 2.2 points lost | none within 1 point |
+
+![Approximate adders](results/adders.png)
+
+*The adder is a small part of an exact MAC (0.072 of 0.463 mW), so on its own it saves little.
+Once the multiplier is cheap, the adder becomes a large share of what is left, and a good
+approximate adder adds about 10 more points of saving. One adder, `add16u_1X9`, breaks every
+dataset at only 4.3% saving: its error (2% MAE) builds up over hundreds of additions per neuron.*
+
+### Signed multipliers (`signed_multipliers.py`)
+
+The library's 13 signed 8×8 multipliers (`mul8s_*`) take two's-complement inputs directly. ReLU
+activations are never negative, so they get 7 bits (0–127) and weights 8 bits. MLP, seed 0.
+
+| Dataset (seed 0, best on test) | Unsigned + sign-magnitude: MAC saved at ≤ 1 point | Signed: MAC saved at ≤ 1 point |
+|---|---|---|
+| MNIST | 78.2% | 41.3% |
+| Fashion-MNIST | 71.3% | 33.3% |
+| CIFAR-10 | 66.3% | 33.3% |
+| CIFAR-100 | 53.8% | 33.3% |
+
+![Signed against unsigned multipliers](results/signed.png)
+
+*Signed multipliers are clearly worse here. The library has only 13 of them, its exact signed
+multiplier costs more than the unsigned one (0.425 against 0.391 mW), and activations lose a bit.
+Sign-magnitude weights with an unsigned multiplier are the better design for ReLU networks.*
 
 ## Run it
 
 ```bash
-pip install -r requirements.txt          # numpy, scikit-learn, matplotlib (+ pillow for image folders)
+pip install -r requirements.txt          # numpy, scipy, scikit-learn, matplotlib, pillow
 git clone https://github.com/ehw-fit/evoapproxlib
 python3 build_luts.py --lib evoapproxlib --out luts    # needs a C compiler (gcc or clang)
 
@@ -158,6 +308,15 @@ python3 cross_dataset.py                                # about 45 min on 2 CPU 
 python3 cross_dataset.py --datasets mnist --seeds 1     # quick test, about 1 min
 python3 plot_cross_dataset.py
 python3 docs/make_readme_images.py
+
+# Part 3
+python3 run_cnn.py                                      # about 2.5 h on 2 CPU cores (--resume continues)
+python3 plot_cnn_vs_mlp.py
+python3 retrain.py                                      # about 1.5 h
+python3 analyze_metrics.py                              # seconds, after cross_dataset.py and run_cnn.py
+python3 hardware/check_hardware.py --abc path/to/abc    # ABC from github.com/berkeley-abc/abc
+python3 approx_adders.py                                # about 50 min
+python3 signed_multipliers.py                           # about 10 min
 ```
 
 What a full run of `cross_dataset.py` prints:
@@ -178,11 +337,19 @@ What a full run of `cross_dataset.py` prints:
 | `plot_cross_dataset.py` | Part 2: figures in `results/` |
 | `get_data.sh` | Downloads the four datasets |
 | `docs/make_readme_images.py` | Dataset samples and heatmap for this README |
+| `mlp_cache.py` | Trains and caches the Part 2 MLPs for the Part 3 scripts |
+| `cnn.py`, `run_cnn.py` | NumPy CNN, its 8-bit version, and the four-dataset CNN study |
+| `plot_cnn_vs_mlp.py` | CNN against MLP figure |
+| `retrain.py` | Fine-tuning with approximate multipliers (straight-through estimator) |
+| `analyze_metrics.py` | Error metrics against accuracy drop |
+| `hardware/netlist.py` | Parses and simulates EvoApproxLib's Verilog netlists, writes BLIF |
+| `hardware/check_hardware.py`, `hardware/synth.sh` | Equivalence check, ABC synthesis, switching activity |
+| `hardware/cells.genlib` | Small generic cell library for ABC mapping |
+| `lutadd.c`, `approx_adders.py` | Matrix multiply with an approximate accumulator adder |
+| `signed_multipliers.py` | Signed `mul8s_*` multipliers |
 | `results/` | CSV results and figures from our runs |
 
 ## Roadmap
-
-Each open item is one GitHub issue with one owner. Tick it when its pull request is merged.
 
 ### Done
 
@@ -196,34 +363,27 @@ Each open item is one GitHub issue with one owner. Tick it when its pull request
 - [x] Fast C lookup-table kernel (`lutmm.c`)
 - [x] Study on MNIST, Fashion-MNIST, CIFAR-10 and CIFAR-100 (`cross_dataset.py`)
 
-### Next: scale up the computation
+- [x] Small CNN, 8-bit, on the four datasets, compared with the MLP (`run_cnn.py`)
+- [x] Retraining with approximate multipliers: plain, compensated, retrained, both (`retrain.py`)
+- [x] Hardware check: netlist equivalence, ABC synthesis, switching activity (`hardware/`).
+      Yosys was not available, so we used ABC, the synthesis engine Yosys runs.
+- [x] Error metrics against accuracy drop (`analyze_metrics.py`)
+- [x] Approximate adders in the accumulator (`approx_adders.py`)
+- [x] Signed multipliers (`signed_multipliers.py`)
+- [x] Final report and slides
 
-- [ ] **A CNN on the four datasets** · owner: @teammate-A
-  - [ ] Small CNN (2 conv layers + 1 dense) quantized to 8 bits, convolutions as im2col + `fastlut.lut_matmul` (`run_cnn.py`)
-  - [ ] Rerun the four-dataset study with it and compare with the MLP
-  - Question: does a CNN, much more accurate on CIFAR, tolerate approximation better or worse?
+### Next
 
-- [ ] **Retraining with approximate multipliers** · owner: @teammate-B
-  - [ ] Fine-tune with the approximate multiplier in the forward pass and a straight-through estimator for gradients (`retrain.py`)
-  - [ ] Compare plain, bias-compensated, retrained, and both, for `mul8u_13QR` and `mul8u_17QU`
-  - Question: how much accuracy does retraining recover compared with free bias compensation?
+Each item is one GitHub issue with one owner. Tick it when its pull request is merged.
 
-- [ ] **Check the hardware numbers** · owner: @teammate-C
-  - [ ] Synthesize the exact multiplier and 3–4 approximate ones from EvoApproxLib's Verilog with Yosys (`hardware/synth.sh`)
-  - [ ] Table of cell count and area against the library's power figures
-  - Question: do the cheapest multipliers keep the same ranking after synthesis?
-
-- [ ] **Which error metric predicts the damage** · owner: @teammate-D
-  - [ ] For all 36 multipliers, correlate mean absolute error, worst-case error, bias and error probability with the accuracy drop (`analyze_metrics.py`)
-  - [ ] Scatter plot with correlation values for each metric
-  - Question: is bias a better predictor than average error?
-
-### Later
-
-- [ ] Layer-wise search on the four datasets
-- [ ] Approximate adders in the accumulator, not only multipliers
-- [ ] Signed multipliers (`mul8s_*`) instead of sign-magnitude weights
-- [ ] Final report and slides with all results
+- [ ] **Layer-wise search on the four datasets, MLP and CNN** · owner: @teammate-A
+  - Question: does giving the first convolution a more exact multiplier recover the CNN's loss?
+- [ ] **Retrain the CNN** · owner: @teammate-B
+  - Question: does retraining close the gap between CNN and MLP?
+- [ ] **Synthesize a full MAC unit** (multiplier + adder + register) with ABC · owner: @teammate-C
+  - Question: how much of the multiplier saving survives at the MAC level?
+- [ ] **More seeds and full test sets for the adder and signed studies** · owner: @teammate-D
+- [ ] Wider adders (24- or 32-bit accumulators) so that the carry handling is also approximate
 
 ## References
 

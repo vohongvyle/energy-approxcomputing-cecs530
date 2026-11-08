@@ -1,0 +1,57 @@
+MNIST          exact unsigned 98.07%  exact signed (mul8s_1KV8) 98.06%  signed MAC energy 1.073
+Fashion-MNIST  exact unsigned 89.25%  exact signed (mul8s_1KV8) 89.29%  signed MAC energy 1.073
+CIFAR-10       exact unsigned 46.82%  exact signed (mul8s_1KV8) 47.04%  signed MAC energy 1.073
+CIFAR-100      exact unsigned 20.53%  exact signed (mul8s_1KV8) 20.71%  signed MAC energy 1.073
+  MNIST          mul8s_1KV8  MAC energy 1.073  drop   0.01
+  MNIST          mul8s_1KVA  MAC energy 1.067  drop   0.05
+  MNIST          mul8s_1KVB  MAC energy 1.041  drop   0.01
+  MNIST          mul8s_1KX2  MAC energy 1.000  drop   0.03
+  MNIST          mul8s_1KR8  MAC energy 0.952  drop  -0.04
+  MNIST          mul8s_1KR6  MAC energy 0.940  drop  -0.01
+  MNIST          mul8s_1KRC  MAC energy 0.914  drop   0.02
+  MNIST          mul8s_1L2H  MAC energy 0.806  drop   0.00
+  MNIST          mul8s_1KVL  MAC energy 0.780  drop   0.05
+  MNIST          mul8s_1KTY  MAC energy 0.667  drop  -0.09
+  MNIST          mul8s_1L2D  MAC energy 0.587  drop   0.41
+  MNIST          mul8s_1L1G  MAC energy 0.428  drop   6.43
+  MNIST          mul8s_1KR3  MAC energy 0.268  drop  82.61
+  Fashion-MNIST  mul8s_1KV8  MAC energy 1.073  drop  -0.04
+  Fashion-MNIST  mul8s_1KVA  MAC energy 1.067  drop   0.06
+  Fashion-MNIST  mul8s_1KVB  MAC energy 1.041  drop   0.21
+  Fashion-MNIST  mul8s_1KX2  MAC energy 1.000  drop   0.35
+  Fashion-MNIST  mul8s_1KR8  MAC energy 0.952  drop  -0.06
+  Fashion-MNIST  mul8s_1KR6  MAC energy 0.940  drop   0.00
+  Fashion-MNIST  mul8s_1KRC  MAC energy 0.914  drop   0.22
+  Fashion-MNIST  mul8s_1L2H  MAC energy 0.806  drop   2.85
+  Fashion-MNIST  mul8s_1KVL  MAC energy 0.780  drop   0.85
+  Fashion-MNIST  mul8s_1KTY  MAC energy 0.667  drop   0.31
+  Fashion-MNIST  mul8s_1L2D  MAC energy 0.587  drop  33.09
+  Fashion-MNIST  mul8s_1L1G  MAC energy 0.428  drop  67.53
+  Fashion-MNIST  mul8s_1KR3  MAC energy 0.268  drop  67.31
+  CIFAR-10       mul8s_1KV8  MAC energy 1.073  drop  -0.22
+  CIFAR-10       mul8s_1KVA  MAC energy 1.067  drop  -0.17
+  CIFAR-10       mul8s_1KVB  MAC energy 1.041  drop  -0.16
+  CIFAR-10       mul8s_1KX2  MAC energy 1.000  drop   0.66
+  CIFAR-10       mul8s_1KR8  MAC energy 0.952  drop  -0.33
+  CIFAR-10       mul8s_1KR6  MAC energy 0.940  drop   0.09
+  CIFAR-10       mul8s_1KRC  MAC energy 0.914  drop   0.40
+  CIFAR-10       mul8s_1L2H  MAC energy 0.806  drop   3.53
+  CIFAR-10       mul8s_1KVL  MAC energy 0.780  drop   1.58
+  CIFAR-10       mul8s_1KTY  MAC energy 0.667  drop  -0.01
+  CIFAR-10       mul8s_1L2D  MAC energy 0.587  drop  22.14
+  CIFAR-10       mul8s_1L1G  MAC energy 0.428  drop  35.52
+  CIFAR-10       mul8s_1KR3  MAC energy 0.268  drop  24.66
+  CIFAR-100      mul8s_1KV8  MAC energy 1.073  drop  -0.18
+  CIFAR-100      mul8s_1KVA  MAC energy 1.067  drop  -0.06
+  CIFAR-100      mul8s_1KVB  MAC energy 1.041  drop  -0.17
+  CIFAR-100      mul8s_1KX2  MAC energy 1.000  drop   0.59
+  CIFAR-100      mul8s_1KR8  MAC energy 0.952  drop  -0.15
+  CIFAR-100      mul8s_1KR6  MAC energy 0.940  drop   0.01
+  CIFAR-100      mul8s_1KRC  MAC energy 0.914  drop   0.16
+  CIFAR-100      mul8s_1L2H  MAC energy 0.806  drop   3.12
+  CIFAR-100      mul8s_1KVL  MAC energy 0.780  drop   1.33
+  CIFAR-100      mul8s_1KTY  MAC energy 0.667  drop   0.31
+  CIFAR-100      mul8s_1L2D  MAC energy 0.587  drop  12.40
+  CIFAR-100      mul8s_1L1G  MAC energy 0.428  drop  18.68
+  CIFAR-100      mul8s_1KR3  MAC energy 0.268  drop  15.66
+saved results/signed.csv, results/signed.png

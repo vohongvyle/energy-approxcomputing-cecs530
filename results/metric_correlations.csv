@@ -1,0 +1,9 @@
+network,dataset,multipliers,MAE (%),Worst-case error (%),"Bias, |mean error| (%)",Error probability (%),Mean relative error (%)
+MLP,mnist,35,0.59,0.58,0.53,0.4,0.54
+MLP,fashion,35,0.94,0.9,0.91,0.79,0.95
+MLP,cifar10,35,0.8,0.81,0.78,0.53,0.75
+MLP,cifar100,35,0.95,0.91,0.91,0.74,0.94
+CNN,mnist,35,0.88,0.84,0.84,0.72,0.87
+CNN,fashion,35,0.94,0.92,0.92,0.7,0.93
+CNN,cifar10,35,0.84,0.85,0.83,0.54,0.79
+CNN,cifar100,35,0.96,0.94,0.92,0.69,0.93
