@@ -1,4 +1,4 @@
-# Energy-Efficient Approximate Computing for ML
+## Energy-Efficient Approximate Computing for ML
 
 For our CECS 530 group project at California State University, Long Beach, we looked at what happens when a neural network uses approximate 8-bit multipliers instead of exact ones. How much multiplier energy can we save, and how much accuracy do we give up?
 
